@@ -1,0 +1,415 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+local Lighting = game:GetService("Lighting")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+
+local settings = {
+    LowGraphicsEnabled = false,
+    LogoSize = 60,
+    FlyEnabled = false
+}
+
+local guiName = "DragonXControlMenu"
+if CoreGui:FindFirstChild(guiName) then CoreGui[guiName]:Destroy() end
+
+local gui = Instance.new("ScreenGui")
+gui.Name = guiName
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.Parent = CoreGui
+
+local keyFrame = Instance.new("Frame")
+keyFrame.Size = UDim2.new(0, 250, 0, 150)
+keyFrame.Position = UDim2.new(0.5, -125, 0.5, -75)
+keyFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+keyFrame.BorderSizePixel = 0
+keyFrame.Active = true
+keyFrame.Draggable = true
+keyFrame.Parent = gui
+
+local keyCorner = Instance.new("UICorner")
+keyCorner.CornerRadius = UDim.new(0, 8)
+keyCorner.Parent = keyFrame
+
+local keyStroke = Instance.new("UIStroke")
+keyStroke.Color = Color3.fromRGB(255, 50, 0)
+keyStroke.Thickness = 2
+keyStroke.Parent = keyFrame
+
+local keyTitle = Instance.new("TextLabel")
+keyTitle.Size = UDim2.new(1, 0, 0, 40)
+keyTitle.BackgroundTransparency = 1
+keyTitle.Text = "NHẬP KEY"
+keyTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+keyTitle.Font = Enum.Font.GothamBold
+keyTitle.TextSize = 16
+keyTitle.Parent = keyFrame
+
+local keyInput = Instance.new("TextBox")
+keyInput.Size = UDim2.new(1, -40, 0, 35)
+keyInput.Position = UDim2.new(0, 20, 0, 50)
+keyInput.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+keyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+keyInput.PlaceholderText = "Nhập key..."
+keyInput.Font = Enum.Font.Gotham
+keyInput.TextSize = 14
+keyInput.Text = ""
+keyInput.Parent = keyFrame
+
+local keyInputCorner = Instance.new("UICorner")
+keyInputCorner.CornerRadius = UDim.new(0, 6)
+keyInputCorner.Parent = keyInput
+
+local submitBtn = Instance.new("TextButton")
+submitBtn.Size = UDim2.new(1, -40, 0, 35)
+submitBtn.Position = UDim2.new(0, 20, 0, 100)
+submitBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 0)
+submitBtn.Text = "Xác nhận"
+submitBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+submitBtn.Font = Enum.Font.GothamBold
+submitBtn.TextSize = 14
+submitBtn.Parent = keyFrame
+
+local submitCorner = Instance.new("UICorner")
+submitCorner.CornerRadius = UDim.new(0, 6)
+submitCorner.Parent = submitBtn
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 260, 0, 350)
+mainFrame.Position = UDim2.new(0.5, -130, 0.5, -175)
+mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Visible = false
+mainFrame.Parent = gui
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 8)
+mainCorner.Parent = mainFrame
+
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Color = Color3.fromRGB(255, 50, 0)
+mainStroke.Thickness = 2
+mainStroke.Parent = mainFrame
+
+local titleBar = Instance.new("Frame")
+titleBar.Size = UDim2.new(1, 0, 0, 40)
+titleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+titleBar.BorderSizePixel = 0
+titleBar.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 8)
+titleCorner.Parent = titleBar
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -20, 1, 0)
+title.Position = UDim2.new(0, 10, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "DRAGON X MENU"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = titleBar
+
+local function createButton(text, posY, color)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -30, 0, 35)
+    btn.Position = UDim2.new(0, 15, 0, posY)
+    btn.BackgroundColor3 = color
+    btn.Text = text
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 14
+    btn.Parent = mainFrame
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = btn
+    return btn
+end
+
+local tpBtn = createButton("Cướp trứng xịn nhất", 55, Color3.fromRGB(200, 150, 0))
+local flyBtn = createButton("Bật Fly (Bay)", 100, Color3.fromRGB(45, 45, 45))
+local lagBtn = createButton("Bật Fix Lag (Low GFX)", 145, Color3.fromRGB(45, 45, 45))
+local bypassBtn = createButton("Bật Bypass Anti-Cheat", 190, Color3.fromRGB(45, 45, 45))
+local sizeBtn = createButton("Đổi cỡ Logo", 235, Color3.fromRGB(45, 100, 150))
+local closeBtn = createButton("Đóng Menu", 280, Color3.fromRGB(150, 20, 20))
+
+local openBtn = Instance.new("TextButton")
+openBtn.Size = UDim2.new(0, settings.LogoSize, 0, settings.LogoSize)
+openBtn.Position = UDim2.new(0, 20, 0.5, -(settings.LogoSize/2))
+openBtn.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+openBtn.Text = "🐉"
+openBtn.TextColor3 = Color3.fromRGB(255, 50, 0)
+openBtn.TextScaled = true
+openBtn.Font = Enum.Font.GothamBold
+openBtn.Visible = false
+openBtn.Active = true
+openBtn.Draggable = true
+openBtn.Parent = gui
+
+local openCorner = Instance.new("UICorner")
+openCorner.CornerRadius = UDim.new(1, 0)
+openCorner.Parent = openBtn
+
+local openStroke = Instance.new("UIStroke")
+openStroke.Color = Color3.fromRGB(255, 50, 0)
+openStroke.Thickness = 2
+openStroke.Parent = openBtn
+
+local spinSpeed = 0
+RunService.RenderStepped:Connect(function()
+    if openBtn.Visible then
+        spinSpeed = spinSpeed + 0.05
+        openBtn.Rotation = math.sin(spinSpeed) * 10
+    end
+end)
+
+submitBtn.MouseButton1Click:Connect(function()
+    if keyInput.Text == "xcutor" then
+        keyFrame.Visible = false
+        mainFrame.Visible = true
+    else
+        keyInput.Text = ""
+        keyInput.PlaceholderText = "Key sai!"
+    end
+end)
+
+local function disableFly()
+    settings.FlyEnabled = false
+    flyBtn.Text = "Bật Fly (Bay)"
+    flyBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    local char = LocalPlayer.Character
+    if char then
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local bv = hrp:FindFirstChild("FlyVelocity")
+            if bv then bv:Destroy() end
+        end
+    end
+end
+
+flyBtn.MouseButton1Click:Connect(function()
+    settings.FlyEnabled = not settings.FlyEnabled
+    flyBtn.Text = settings.FlyEnabled and "Tắt Fly (Bay)" or "Bật Fly (Bay)"
+    flyBtn.BackgroundColor3 = settings.FlyEnabled and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(45, 45, 45)
+    if not settings.FlyEnabled then disableFly() end
+end)
+
+lagBtn.MouseButton1Click:Connect(function()
+    settings.LowGraphicsEnabled = not settings.LowGraphicsEnabled
+    lagBtn.Text = settings.LowGraphicsEnabled and "Tắt Fix Lag" or "Bật Fix Lag (Low GFX)"
+    lagBtn.BackgroundColor3 = settings.LowGraphicsEnabled and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(45, 45, 45)
+    
+    if settings.LowGraphicsEnabled then
+        Lighting.GlobalShadows = false
+        Lighting.FogEnd = 9e9
+        Lighting.Brightness = 1
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("BasePart") then
+                v.Material = Enum.Material.SmoothPlastic
+            elseif v:IsA("Decal") then
+                v.Transparency = 1
+            elseif v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") then
+                v.Enabled = false
+            end
+        end
+    else
+        Lighting.GlobalShadows = true
+        Lighting.FogEnd = 100000
+        Lighting.Brightness = 2
+    end
+end)
+
+local bypassEnabled = false
+bypassBtn.MouseButton1Click:Connect(function()
+    bypassEnabled = not bypassEnabled
+    bypassBtn.Text = bypassEnabled and "Tắt Bypass Anti-Cheat" or "Bật Bypass Anti-Cheat"
+    bypassBtn.BackgroundColor3 = bypassEnabled and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(45, 45, 45)
+    
+    if bypassEnabled then
+        pcall(function()
+            local mt = getrawmetatable(game)
+            local oldNamecall = mt.__namecall
+            setreadonly(mt, false)
+            mt.__namecall = newcclosure(function(self, ...)
+                local method = getnamecallmethod()
+                if method == "Kick" and self == LocalPlayer then
+                    return
+                end
+                return oldNamecall(self, ...)
+            end)
+            setreadonly(mt, true)
+        end)
+    end
+end)
+
+sizeBtn.MouseButton1Click:Connect(function()
+    if settings.LogoSize == 60 then
+        settings.LogoSize = 40
+    elseif settings.LogoSize == 40 then
+        settings.LogoSize = 80
+    else
+        settings.LogoSize = 60
+    end
+    
+    local tween = TweenService:Create(openBtn, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
+        Size = UDim2.new(0, settings.LogoSize, 0, settings.LogoSize),
+        Position = UDim2.new(0, 20, 0.5, -(settings.LogoSize/2))
+    })
+    tween:Play()
+    sizeBtn.Text = "Đổi cỡ Logo ("..settings.LogoSize..")"
+end)
+
+local function grabEgg()
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    
+    if settings.FlyEnabled then
+        disableFly()
+        task.wait(0.1)
+    end
+    
+    local originalPos = hrp.CFrame
+    local playerPos = hrp.Position
+    
+    local bestTarget = nil
+    local highestValue = -math.huge
+    
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") then
+            local name = string.lower(obj.Name)
+            
+            if string.find(name, "egg") or string.find(name, "chest") then
+                local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
+                
+                if part then
+                    local dist = (part.Position - playerPos).Magnitude
+                    
+                    if part.Position.Y < (playerPos.Y + 15) and dist < 1000 then
+                        local value = 0
+                        local weight = obj:FindFirstChild("Weight")
+                        local price = obj:FindFirstChild("Price")
+                        local rarity = obj:FindFirstChild("Rarity")
+                        
+                        if weight and weight:IsA("NumberValue") then value = value + weight.Value end
+                        if price and price:IsA("NumberValue") then value = value + price.Value end
+                        if rarity and rarity:IsA("StringValue") then
+                            local r = string.lower(rarity.Value)
+                            if r == "secret" then value = value + 100000
+                            elseif r == "eternal" then value = value + 80000
+                            elseif r == "divine" then value = value + 60000
+                            elseif r == "mythic" then value = value + 40000
+                            elseif r == "legendary" then value = value + 20000 end
+                        end
+                        
+                        if value == 0 then
+                            if string.find(name, "secret") then value = 100000
+                            elseif string.find(name, "eternal") then value = 80000
+                            elseif string.find(name, "divine") then value = 60000
+                            elseif string.find(name, "mythic") then value = 40000
+                            elseif string.find(name, "legendary") then value = 20000
+                            else value = 1 end
+                        end
+                        
+                        local score = value - dist
+                        if score > highestValue then
+                            highestValue = score
+                            bestTarget = part
+                        end
+                    end
+                end
+            end
+        end
+    end
+    
+    if bestTarget then
+        tpBtn.Text = "Đang cướp..."
+        
+        hrp.Anchored = true
+        hrp.CFrame = CFrame.new(bestTarget.Position)
+        task.wait(0.15)
+        
+        pcall(function()
+            if firetouchinterest then
+                firetouchinterest(hrp, bestTarget, 0)
+                task.wait(0.1)
+                firetouchinterest(hrp, bestTarget, 1)
+            end
+        end)
+        
+        task.wait(0.15)
+        tpBtn.Text = "Đang bay về..."
+        
+        hrp.CFrame = originalPos
+        task.wait(0.15)
+        hrp.Anchored = false
+        
+        tpBtn.Text = "Đã cướp xong!"
+        task.wait(1.5)
+        tpBtn.Text = "Cướp trứng xịn nhất"
+    else
+        tpBtn.Text = "Không tìm thấy trứng!"
+        task.wait(1.5)
+        tpBtn.Text = "Cướp trứng xịn nhất"
+    end
+end
+
+tpBtn.MouseButton1Click:Connect(function()
+    grabEgg()
+end)
+
+closeBtn.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+    openBtn.Visible = true
+end)
+
+openBtn.MouseButton1Click:Connect(function()
+    mainFrame.Visible = true
+    openBtn.Visible = false
+end)
+
+UserInputService.InputBegan:Connect(function(input, processed)
+    if not processed and input.KeyCode == Enum.KeyCode.RightControl then
+        if mainFrame.Visible then
+            mainFrame.Visible = false
+            openBtn.Visible = true
+        elseif not keyFrame.Visible then
+            mainFrame.Visible = true
+            openBtn.Visible = false
+        end
+    end
+end)
+
+RunService.Heartbeat:Connect(function()
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    
+    if settings.FlyEnabled and hrp then
+        local bv = hrp:FindFirstChild("FlyVelocity")
+        if not bv then
+            bv = Instance.new("BodyVelocity")
+            bv.Name = "FlyVelocity"
+            bv.MaxForce = Vector3.new(1e5, 1e5, 1e5)
+            bv.Velocity = Vector3.new(0, 0, 0)
+            bv.Parent = hrp
+        end
+        
+        local camera = workspace.CurrentCamera
+        local moveDir = Vector3.new(0, 0, 0)
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + camera.CFrame.LookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - camera.CFrame.LookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - camera.CFrame.RightVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + camera.CFrame.RightVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir = moveDir + Vector3.new(0, 1, 0) end
+        bv.Velocity = moveDir * 50
+    end
+end)
